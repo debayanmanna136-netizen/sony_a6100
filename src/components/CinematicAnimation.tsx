@@ -307,43 +307,27 @@ function initScrollAnimations(
   }
 
   // Main frame scroll trigger — scrub: 0.3 keeps frame & text tightly in sync
-  let animationTween: any;
-
-  function resetAnimation() {
-    if (animationTween) animationTween.kill();
-    drawFrame(0, canvas, ctx, frames);
-    if (progressFill) progressFill.style.height = "0%";
-    if (progressPct) progressPct.textContent = "0%";
-    updateChapters(0);
-  }
-
   ScrollTrigger.create({
-    trigger: "#animation-section",
-    start: "top 75%",
-    end: "bottom top",
-    onEnter: () => {
-      if (animationTween) animationTween.kill();
-      let obj = { progress: 0 };
-      animationTween = gsap.to(obj, {
-        progress: 1,
-        duration: 6,
-        ease: "power2.inOut",
-        onUpdate: function () {
-          const progress = obj.progress;
-          const frameIndex = progress * (TOTAL_FRAMES - 1);
-          currentFrameRef.current = Math.round(frameIndex);
-          drawFrame(frameIndex, canvas, ctx, frames);
+    trigger: ".animation-pin-wrapper",
+    start: "top top",
+    end: "bottom bottom",
+    scrub: 0.3,
+    onUpdate: (self: any) => {
+      const rawProgress = self.progress;
+      // 500vh total height: first 400vh (80%) is animation, last 100vh (20%) is pause.
+      const animProgress = Math.min(rawProgress / 0.8, 1.0);
+      const frameIndex = animProgress * (TOTAL_FRAMES - 1);
+      const roundedFrame = Math.round(frameIndex);
+      currentFrameRef.current = roundedFrame;
+      drawFrame(frameIndex, canvas, ctx, frames);
 
-          const pctVal = Math.round(progress * 100);
-          if (progressFill) progressFill.style.height = pctVal + "%";
-          if (progressPct) progressPct.textContent = pctVal + "%";
+      const pctVal = Math.round(animProgress * 100);
+      if (progressFill) progressFill.style.height = pctVal + "%";
+      if (progressPct) progressPct.textContent = pctVal + "%";
 
-          updateChapters(Math.round(frameIndex));
-        },
-      });
+      // Pass frame index (not progress) for exact boundary matching
+      updateChapters(roundedFrame);
     },
-    onLeave: resetAnimation,
-    onLeaveBack: resetAnimation,
   });
 
   // Engineering bento cards
