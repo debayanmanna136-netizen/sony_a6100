@@ -319,7 +319,7 @@ function initScrollAnimations(
 
   ScrollTrigger.create({
     trigger: "#animation-section",
-    start: "top top",
+    start: "top 75%",
     end: "bottom top",
     onEnter: () => {
       if (animationTween) animationTween.kill();
