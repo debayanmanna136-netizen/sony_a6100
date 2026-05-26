@@ -442,8 +442,8 @@ button { font-family: inherit; }
   background: var(--graphite-deep);
 }
 .animation-pin-wrapper {
-  /* 4 full viewport-heights for animation + 1 viewport-height for pause at the end */
-  height: 500vh;
+  /* Gives extra scroll space to preserve cinematic immersion */
+  height: 250vh;
 }
 .animation-sticky {
   position: sticky;
